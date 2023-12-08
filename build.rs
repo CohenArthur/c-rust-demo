@@ -1,3 +1,3 @@
 fn main() {
-    println!("cargo:rustc-link-search=/tmp/crust/clib");
+    println!("cargo:rustc-link-search=/tmp/c-rust-demo/clib");
 }

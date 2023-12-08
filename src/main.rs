@@ -3,6 +3,7 @@ extern "C" {
     fn square(x: libc::c_int) -> libc::c_int;
 
     fn span_create(ptr: *const libc::c_void, len: libc::size_t) -> Span;
+    fn show_span_pair(ptr: *const SpanPair);
 }
 
 #[repr(C)]
@@ -13,6 +14,7 @@ struct Span {
 }
 
 #[repr(C)]
+#[derive(Debug)]
 struct SpanPair {
     fst: Span,
     snd: Span,
@@ -71,6 +73,7 @@ fn main() {
 
     println!("{}", unsafe { square(2) });
     println!("{}", safe_square(2));
+
     let span = unsafe {
         span_create(
             &a as *const i32 as *const libc::c_void,
@@ -78,11 +81,26 @@ fn main() {
         )
     };
 
+    let span2 = unsafe {
+        span_create(
+            &span as *const Span as *const libc::c_void,
+            1 as libc::size_t,
+        )
+    };
+
+    let pair = SpanPair {
+        fst: span,
+        snd: span2,
+    };
+
+    dbg!(&pair);
+    unsafe { show_span_pair(&pair as *const SpanPair) };
+
     let squared = deep_backtrace(8);
-    println!("{squared}");
+    dbg!(squared);
 
     let s = String::from("a complex Rust string");
     let hamster = "a less complex Rust string";
 
-    dbg!(span, s, hamster);
+    dbg!(s, hamster);
 }
