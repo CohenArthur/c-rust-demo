@@ -1,16 +1,25 @@
+#![no_std]
+#![feature(c_size_t)]
+#![feature(start)]
+
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    loop {}
+}
+
 #[link(name = "clib")]
 extern "C" {
-    fn square(x: libc::c_int) -> libc::c_int;
+    fn square(x: core::ffi::c_int) -> core::ffi::c_int;
 
-    fn span_create(ptr: *const libc::c_void, len: libc::size_t) -> Span;
+    fn span_create(ptr: *const core::ffi::c_void, len: core::ffi::c_size_t) -> Span;
     fn show_span_pair(ptr: *const SpanPair);
 }
 
 #[repr(C)]
 #[derive(Debug)]
 struct Span {
-    ptr: *const libc::c_void,
-    len: libc::size_t,
+    ptr: *const core::ffi::c_void,
+    len: core::ffi::c_size_t,
 }
 
 #[repr(C)]
@@ -21,7 +30,7 @@ struct SpanPair {
 }
 
 fn safe_square(a: i32) -> i32 {
-    unsafe { square(a as libc::c_int) }
+    unsafe { square(a as core::ffi::c_int) }
 }
 
 fn id0(a: i32) -> i32 {
@@ -68,23 +77,30 @@ fn deep_backtrace(a: i32) -> i32 {
     id9(a)
 }
 
+#[start]
+fn start(_: isize, _: *const *const u8) -> isize {
+    main();
+
+    0
+}
+
 fn main() {
     let a = 15;
 
-    println!("{}", unsafe { square(2) });
-    println!("{}", safe_square(2));
+    // println!("{}", unsafe { square(2) });
+    // println!("{}", safe_square(2));
 
     let span = unsafe {
         span_create(
-            &a as *const i32 as *const libc::c_void,
-            square(2) as libc::size_t,
+            &a as *const i32 as *const core::ffi::c_void,
+            square(2) as core::ffi::c_size_t,
         )
     };
 
     let span2 = unsafe {
         span_create(
-            &span as *const Span as *const libc::c_void,
-            1 as libc::size_t,
+            &span as *const Span as *const core::ffi::c_void,
+            1 as core::ffi::c_size_t,
         )
     };
 
@@ -93,14 +109,14 @@ fn main() {
         snd: span2,
     };
 
-    dbg!(&pair);
+    // dbg!(&pair);
     unsafe { show_span_pair(&pair as *const SpanPair) };
 
     let squared = deep_backtrace(8);
-    dbg!(squared);
+    // dbg!(squared);
 
-    let s = String::from("a complex Rust string");
+    // let s = String::from("a complex Rust string");
     let hamster = "a less complex Rust string";
 
-    dbg!(s, hamster);
+    // dbg!(s, hamster);
 }
