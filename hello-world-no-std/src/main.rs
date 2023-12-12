@@ -9,7 +9,8 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 }
 
 #[start]
-fn start(_: isize, _: *const *const u8) -> isize {
+#[no_mangle]
+fn _start(_: isize, _: *const *const u8) -> isize {
     main();
 
     0
@@ -22,7 +23,7 @@ fn square(a: i32) -> i32 {
 }
 
 fn id0(a: i32) -> i32 {
-    square(a)
+    core::hint::black_box(square(a))
 }
 
 fn id1(a: i32) -> i32 {
@@ -65,8 +66,16 @@ fn deep_backtrace(a: i32) -> i32 {
     id9(a)
 }
 
-fn main() {
-    let a = deep_backtrace(15);
-    let b = a + 14;
-    let c = b * a;
+fn main() -> ! {
+    let mut i = 0;
+
+    loop {
+        i += 1;
+
+        let a = deep_backtrace(i);
+        let b = a + 14;
+        let c = b * a;
+
+        i = c;
+    }
 }
