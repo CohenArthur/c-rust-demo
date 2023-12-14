@@ -79,12 +79,10 @@ fn deep_backtrace(a: i32) -> i32 {
 
 #[start]
 fn start(_: isize, _: *const *const u8) -> isize {
-    main();
-
-    0
+    main()
 }
 
-fn main() {
+fn main() -> isize {
     let a = 15;
 
     // println!("{}", unsafe { square(2) });
@@ -115,8 +113,7 @@ fn main() {
     let squared = deep_backtrace(8);
     // dbg!(squared);
 
-    // let s = String::from("a complex Rust string");
-    let hamster = "a less complex Rust string";
+    let s = "a less complex Rust string";
 
-    // dbg!(s, hamster);
+    squared as isize + s.len() as isize
 }

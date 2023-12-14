@@ -1,5 +1,4 @@
 CFLAGS += -g -O0
-LDFLAGS += -shared
 OBJS = lib.o
 
 all: libclib.a
