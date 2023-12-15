@@ -78,7 +78,8 @@ fn deep_backtrace(a: i32) -> i32 {
 }
 
 #[start]
-fn start(_: isize, _: *const *const u8) -> isize {
+#[no_mangle]
+fn _start(_: isize, _: *const *const u8) -> isize {
     main()
 }
 
